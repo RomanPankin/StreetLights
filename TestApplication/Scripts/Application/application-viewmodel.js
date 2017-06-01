@@ -28,7 +28,7 @@ var Rsl;
             parent.set(data);
         };
         ApplicationViewModel.prototype.isFailed = function (bulb) {
-            return bulb.bulbStatus().fault > 0;
+            return bulb.bulbStatus().faultCondition > 0;
         };
         ApplicationViewModel.prototype.getLightPower = function (light) {
             var result = 0;
@@ -83,6 +83,13 @@ var Rsl;
                 }));
             }
         };
+        ApplicationViewModel.prototype.setFault = function (parent, bulb, fault) {
+            this.runLongProcess(parent._apiAccess.setFault(bulb.bulbInformation.id, fault)
+                .done(function (x) {
+                // reload bulb data
+                parent.updateBulbStatus(bulb);
+            }));
+        };
         ApplicationViewModel.prototype.runLongProcess = function (promise) {
             var _this = this;
             if (++this.longProcessesCount == 1)
@@ -110,6 +117,7 @@ var Rsl;
         ApplicationViewModel.prototype.updateBulbStatus = function (bulb) {
             this._apiAccess.loadBulbDetail(bulb.bulbInformation.id).done(function (x) {
                 bulb.bulbStatus(x.bulbCurrentState);
+                console.log(x.bulbCurrentState);
             });
         };
         ApplicationViewModel.prototype.loadData = function () {
@@ -122,4 +130,3 @@ var Rsl;
     }());
     Rsl.ApplicationViewModel = ApplicationViewModel;
 })(Rsl || (Rsl = {}));
-//# sourceMappingURL=application-viewmodel.js.map

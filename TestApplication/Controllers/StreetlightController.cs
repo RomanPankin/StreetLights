@@ -52,6 +52,13 @@ namespace TestApplication.Controllers
             return await _dataLayer.SwitchOffBulb(bulbId);
         }
 
+        [HttpPost]
+        [Route("bulb/{bulbId:guid}/fault/{fault}")]
+        public async Task<bool> SetFault(Guid bulbId, FaultCode fault)
+        {
+            return await _dataLayer.SetFault(bulbId, fault);
+        }
+
         [Route("")]
         public async Task<IEnumerable<StreetlightSummaryModel>> GetAllStreetLights()
         {

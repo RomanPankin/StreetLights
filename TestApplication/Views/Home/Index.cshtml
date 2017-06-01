@@ -27,9 +27,9 @@
             <h3>Bulb Information</h3>
             <ul class="list-group" data-bind="foreach: bulbs">
                 <li class="list-group-item">
-                    <div class="bulb-display" data-bind="css: {'bulb-on'   : bulbStatus().isOn && !bulbStatus().fault,
-                                                               'bulb-off'  : !bulbStatus().isOn && !bulbStatus().fault,
-                                                               'bulb-fail' : bulbStatus().fault
+                    <div class="bulb-display" data-bind="css: {'bulb-on'   : bulbStatus().isOn && !$root.isFailed($data),
+                                                               'bulb-off'  : !bulbStatus().isOn && !$root.isFailed($data),
+                                                               'bulb-fail' : $root.isFailed($data)
                                                               }"></div>
                     <span data-bind="text: bulbStatus().isOn ? 'On' : 'Off'"></span>
                     <span data-bind="bulbInformation.bulbType"></span>
@@ -42,6 +42,10 @@
                     Hours: <span data-bind="text: bulbStatus().bulbHours"></span>/<span data-bind="text:bulbInformation.maxHours"></span>hrs
                     <button class="pull-right" data-bind="click: $root.toggleBulbState($root, $parent, $data),
                                                           enable: $parent.isSwitchedOn()">Toggle Bulb State</button>
+                    <button class="pull-right" data-bind="text: $root.isFailed($data) ? 'Clear fault' : 'Set fault',
+                                                          click: $root.setFault($root, $data, $root.isFailed($data) ? 0 : 3),
+                                                          enable: $parent.isSwitchedOn()
+                                                         "></button>
                 </li>
             </ul>
         </div>

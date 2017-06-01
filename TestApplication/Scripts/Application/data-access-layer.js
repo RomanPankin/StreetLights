@@ -46,6 +46,9 @@ var Rsl;
         ApiAccess.prototype.switchOffBulb = function (id) {
             return this.makeRequest(["bulb", id, "off"], "POST");
         };
+        ApiAccess.prototype.setFault = function (id, fault) {
+            return this.makeRequest(["bulb", id, "fault", fault + ""], "POST");
+        };
         ApiAccess.prototype.switchOnBulb = function (id) {
             return this.makeRequest(["bulb", id, "on"], "POST");
         };
@@ -65,4 +68,3 @@ var Rsl;
     }());
     Rsl.ApiAccess = ApiAccess;
 })(Rsl || (Rsl = {}));
-//# sourceMappingURL=data-access-layer.js.map

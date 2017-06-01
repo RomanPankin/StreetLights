@@ -110,6 +110,13 @@ namespace TestApplication.Repositories
             return true;
         }
 
+        public async Task<bool> SetFault(Guid bulbId, FaultCode faultCode) {
+            BulbState bulb = await _dataService.GetBulbState(bulbId);
+            bulb.BulbCurrentState.FaultCondition = faultCode;
+
+            return true;
+        }
+
         private bool CanSwitchBulbOn(BulbState bulbState)
         {
             return bulbState.BulbCurrentState.BulbTemperature <= bulbState.BulbInformation.MaxTemperature;

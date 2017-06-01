@@ -26,6 +26,6 @@
         bulbTemperature: number;
         bulbHours: number;
         isOn: boolean;
-        fault: number;
+        faultCondition: number;
     }
 }

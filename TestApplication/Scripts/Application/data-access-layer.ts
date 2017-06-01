@@ -25,6 +25,8 @@ module Rsl {
 
         switchOffBulb(id: string): JQueryPromise<boolean>;
         switchOnBulb(id: string): JQueryPromise<boolean>;
+
+        setFault(id: string, fault: number): JQueryPromise<boolean>;
     }
 
     export enum RequestType {
@@ -78,6 +80,10 @@ module Rsl {
 
         public switchOffBulb(id: string): JQueryPromise<boolean> {
             return this.makeRequest<boolean>(["bulb", id, "off"], "POST");
+        }
+
+        public setFault(id: string, fault: number): JQueryPromise<boolean> {
+            return this.makeRequest<boolean>(["bulb", id, "fault", fault+""], "POST");
         }
 
         public switchOnBulb(id: string): JQueryPromise<boolean> {

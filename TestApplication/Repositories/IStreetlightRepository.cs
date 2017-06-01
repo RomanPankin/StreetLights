@@ -30,6 +30,7 @@ namespace TestApplication.Repositories
         Task<bool> RegisterFault(Guid bulbId, FaultCode fault);
         Task<bool> RegisterBulbFailure(Guid bulbId);
         Task<bool> SetBulbTemperature(Guid bulbId, double temperature);
+        Task<bool> SetFault(Guid bulbId, FaultCode faultCode);
 
         // the following are used by the light-sensor-driver and must not be changed
         Task<bool> SetAmbientLightLevel(int lumens);

@@ -34,7 +34,7 @@ module Rsl {
             parent.set(data);
         }
         public isFailed(bulb: IBulbStateViewModel): boolean {
-            return bulb.bulbStatus().fault > 0;
+            return bulb.bulbStatus().faultCondition > 0;
         }
 
         public getLightPower(light: IStreetlightDetailViewModel): number {
@@ -103,6 +103,16 @@ module Rsl {
             }
         }
 
+        public setFault(parent: ApplicationViewModel, bulb: IBulbStateViewModel, fault: number): void {
+            this.runLongProcess(
+                parent._apiAccess.setFault(bulb.bulbInformation.id, fault)
+                    .done(x => {
+                        // reload bulb data
+                        parent.updateBulbStatus(bulb);
+                    })
+            );
+        }
+
         private runLongProcess(promise: JQueryPromise<any>): JQueryPromise<any> {
             if (++this.longProcessesCount == 1)
                 this.isLongProcess(true);
@@ -134,6 +144,7 @@ module Rsl {
         private updateBulbStatus(bulb: IBulbStateViewModel) {
             this._apiAccess.loadBulbDetail(bulb.bulbInformation.id).done(x => {
                 bulb.bulbStatus(x.bulbCurrentState);
+                console.log(x.bulbCurrentState);
             });
         }
 
