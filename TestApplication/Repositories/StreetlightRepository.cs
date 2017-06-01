@@ -112,7 +112,7 @@ namespace TestApplication.Repositories
 
         private bool CanSwitchBulbOn(BulbState bulbState)
         {
-            return true;
+            return bulbState.BulbCurrentState.BulbTemperature <= bulbState.BulbInformation.MaxTemperature;
         }
 
         public async Task<bool> SwitchOffLight(Guid lightId)
