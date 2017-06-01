@@ -5,6 +5,10 @@ module Rsl {
     export class ApplicationViewModel {
         public streetlights: KnockoutObservable<Models.IStreetlightSummary[]>;
         public selectedStreetlight: KnockoutObservable<IStreetlightDetailViewModel>;
+
+        private longProcessesCount: number = 0;
+        public isLongProcess: KnockoutObservable<boolean> = ko.observable(false);
+
         // get applicant to add a loader here
         constructor(private _apiAccess: IApiAccess) {
             this.streetlights = ko.observable<Models.IStreetlightSummary[]>();
@@ -46,20 +50,24 @@ module Rsl {
             var isOn = light.isSwitchedOn();
 
             if (isOn) {
-                this._apiAccess.switchOffLight(light.id).always(x => {
-                    this.selectStreetlight(this, {
-                        id: light.id,
-                        description: light.description
-                    });
-                });
+                this.runLongProcess(
+                    this._apiAccess.switchOffLight(light.id).always(x => {
+                        this.selectStreetlight(this, {
+                            id: light.id,
+                            description: light.description
+                        });
+                    })
+                );
             }
             else {
-                this._apiAccess.switchOnLight(light.id).always(x => {
-                    this.selectStreetlight(this, {
-                        id: light.id,
-                        description: light.description
-                    });
-                });
+                this.runLongProcess(
+                    this._apiAccess.switchOnLight(light.id).always(x => {
+                        this.selectStreetlight(this, {
+                            id: light.id,
+                            description: light.description
+                        });
+                    })
+                );
             }
         }
 
@@ -68,15 +76,29 @@ module Rsl {
             
             if (isOn) {
                 // always switch off
-                parent._apiAccess.switchOffBulb(bulb.bulbInformation.id)
-                    .done(x => {
-                        // reload bulb data
-                        parent.updateBulbStatus(bulb);
-                    });
+                this.runLongProcess(
+                    parent._apiAccess.switchOffBulb(bulb.bulbInformation.id)
+                        .done(x => {
+                            // reload bulb data
+                            parent.updateBulbStatus(bulb);
+                        })
+                );
             }
             else {
                 // TODO: implement on methods here
             }
+        }
+
+        private runLongProcess(promise: JQueryPromise<any>): JQueryPromise<any> {
+            console.log(promise);
+
+            if (++this.longProcessesCount == 1)
+                this.isLongProcess(true);
+
+            return promise.always(() => {
+                if (--this.longProcessesCount == 0)
+                    this.isLongProcess(false);
+            });
         }
 
         private updateBulbStatus(bulb: IBulbStateViewModel) {

@@ -7,6 +7,8 @@ var Rsl;
         function ApplicationViewModel(_apiAccess) {
             var _this = this;
             this._apiAccess = _apiAccess;
+            this.longProcessesCount = 0;
+            this.isLongProcess = ko.observable(false);
             this.streetlights = ko.observable();
             this.selectedStreetlight = ko.observable();
             this.loadData().done(function (x) {
@@ -41,34 +43,44 @@ var Rsl;
             var _this = this;
             var isOn = light.isSwitchedOn();
             if (isOn) {
-                this._apiAccess.switchOffLight(light.id).always(function (x) {
+                this.runLongProcess(this._apiAccess.switchOffLight(light.id).always(function (x) {
                     _this.selectStreetlight(_this, {
                         id: light.id,
                         description: light.description
                     });
-                });
+                }));
             }
             else {
-                this._apiAccess.switchOnLight(light.id).always(function (x) {
+                this.runLongProcess(this._apiAccess.switchOnLight(light.id).always(function (x) {
                     _this.selectStreetlight(_this, {
                         id: light.id,
                         description: light.description
                     });
-                });
+                }));
             }
         };
         ApplicationViewModel.prototype.toggleBulbState = function (parent, bulb) {
             var isOn = bulb.bulbStatus().isOn;
             if (isOn) {
                 // always switch off
-                parent._apiAccess.switchOffBulb(bulb.bulbInformation.id)
+                this.runLongProcess(parent._apiAccess.switchOffBulb(bulb.bulbInformation.id)
                     .done(function (x) {
                     // reload bulb data
                     parent.updateBulbStatus(bulb);
-                });
+                }));
             }
             else {
             }
+        };
+        ApplicationViewModel.prototype.runLongProcess = function (promise) {
+            var _this = this;
+            console.log(promise);
+            if (++this.longProcessesCount == 1)
+                this.isLongProcess(true);
+            return promise.always(function () {
+                if (--_this.longProcessesCount == 0)
+                    _this.isLongProcess(false);
+            });
         };
         ApplicationViewModel.prototype.updateBulbStatus = function (bulb) {
             this._apiAccess.loadBulbDetail(bulb.bulbInformation.id).done(function (x) {
@@ -85,4 +97,3 @@ var Rsl;
     }());
     Rsl.ApplicationViewModel = ApplicationViewModel;
 })(Rsl || (Rsl = {}));
-//# sourceMappingURL=application-viewmodel.js.map

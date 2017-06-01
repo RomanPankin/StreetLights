@@ -65,4 +65,3 @@ var Rsl;
     }());
     Rsl.ApiAccess = ApiAccess;
 })(Rsl || (Rsl = {}));
-//# sourceMappingURL=data-access-layer.js.map

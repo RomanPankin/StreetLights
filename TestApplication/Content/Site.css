@@ -88,6 +88,7 @@ article h2 {
     display:inline-block;
 }
 
+/* Bulb state */
 .bulb-on {
     background-color: yellow;
 }
@@ -100,6 +101,7 @@ article h2 {
     background-color: red;
 }
 
+/* Bulb temperature */
 .bulb-temperature-zero {
     color: lightgray;
 }
@@ -114,4 +116,55 @@ article h2 {
 .bulb-temperature-high {
     color: red;
     font-weight: bold;
+}
+
+/* Information */
+.info-loading {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    background: rgba(255,255,255,0.85);
+}
+
+.info-loading--visible {
+    display: flex;
+}
+
+.info-text {
+    text-align: center;
+}
+
+.info-progress {
+    position: relative;
+    width: 96px;
+    height: 1rem;
+    margin-top: 1rem;
+    border: 1px solid rgb(220,220,220);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.info-progress::before {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    bottom: 0px;
+    width: 48px;
+    margin-left: -24px;
+    background: green;
+    animation: info-animation 1.6s ease 0s infinite;
+}
+
+@keyframes info-animation {
+    0%   {left: 0px;}
+    50%  {left: 100%;}
+    100% {left: 0px}
 }
