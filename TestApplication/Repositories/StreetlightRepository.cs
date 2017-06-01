@@ -153,6 +153,7 @@ namespace TestApplication.Repositories
                 {
                     if (CanSwitchBulbOn(bulb) && await _lightDriver.SwitchOnBulb(bulb.BulbInformation.Id))
                     {
+                        // Remark: it's possible to remove lock block and to fill the list from the task's results
                         lock (bulbsSwitchedOn)
                         {
                             bulbsSwitchedOn.Add(bulb.BulbInformation.Id);
