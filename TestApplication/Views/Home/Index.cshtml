@@ -27,11 +27,18 @@
             <h3>Bulb Information</h3>
             <ul class="list-group" data-bind="foreach: bulbs">
                 <li class="list-group-item">
-                    <div class="bulb-display"></div>
+                    <div class="bulb-display" data-bind="css: {'bulb-on'   : bulbStatus().isOn && !bulbStatus().fault,
+                                                               'bulb-off'  : !bulbStatus().isOn && !bulbStatus().fault,
+                                                               'bulb-fail' : bulbStatus().fault
+                                                              }"></div>
                     <span data-bind="text: bulbStatus().isOn ? 'On' : 'Off'"></span>
                     <span data-bind="bulbInformation.bulbType"></span>
                     <span data-bind="visible: $root.isFailed($data)">Failed</span>
-                    Temperature: <span data-bind="text: bulbStatus().bulbTemperature"></span>/<span data-bind="text:bulbInformation.maxTemperature"></span>C
+                    Temperature: <span data-bind="css: {'bulb-temperature-zero'       : bulbStatus().bulbTemperature == 0,
+                                                        'bulb-temperature-less-half'  : bulbStatus().bulbTemperature &lt; bulbInformation.maxTemperature/2,
+                                                        'bulb-temperature-half'       : bulbStatus().bulbTemperature &gt;= bulbInformation.maxTemperature/2 && bulbStatus().bulbTemperature &lt;= bulbInformation.maxTemperature,
+                                                        'bulb-temperature-high'       : bulbStatus().bulbTemperature &gt; bulbInformation.maxTemperature,
+                                                       }"><span data-bind="text: bulbStatus().bulbTemperature"></span>/<span data-bind="text:bulbInformation.maxTemperature"></span>C</span>
                     Hours: <span data-bind="text: bulbStatus().bulbHours"></span>/<span data-bind="text:bulbInformation.maxHours"></span>hrs
                     <button class="pull-right">Toggle Bulb State</button>
                 </li>

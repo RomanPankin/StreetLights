@@ -87,3 +87,31 @@ article h2 {
     border:1px solid gray;
     display:inline-block;
 }
+
+.bulb-on {
+    background-color: yellow;
+}
+
+.bulb-off {
+    background-color: black;
+}
+
+.bulb-fail {
+    background-color: red;
+}
+
+.bulb-temperature-zero {
+    color: lightgray;
+}
+
+.bulb-temperature-less-half {
+}
+
+.bulb-temperature-half {
+    color: orange;
+}
+
+.bulb-temperature-high {
+    color: red;
+    font-weight: bold;
+}
