@@ -14,12 +14,18 @@ module Rsl {
         public isLongProcess: KnockoutObservable<boolean> = ko.observable(false);
         public lastErrorMessage: KnockoutObservable<string> = ko.observable('');
 
+        public totalLightPower: KnockoutComputed<number>;
+
+
         // get applicant to add a loader here
         constructor(private _apiAccess: IApiAccess) {
             this.streetlights = ko.observable<Models.IStreetlightSummary[]>();
             this.selectedStreetlight = ko.observable<IStreetlightDetailViewModel>();
             this.loadData().done(x => {
                 this.streetlights(x);
+            });
+            this.totalLightPower = ko.computed(() => {
+                return this.getLightPower(this.selectedStreetlight());
             });
         }
 
@@ -40,7 +46,7 @@ module Rsl {
         public getLightPower(light: IStreetlightDetailViewModel): number {
             let result = 0;
 
-            if (light.isSwitchedOn()) {
+            if (light && light.isSwitchedOn()) {
                 for (let bulb of light.bulbs) {
                     if (bulb.bulbStatus().isOn) {
                         result += bulb.bulbInformation.powerDraw;

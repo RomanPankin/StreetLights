@@ -17,6 +17,9 @@ var Rsl;
             this.loadData().done(function (x) {
                 _this.streetlights(x);
             });
+            this.totalLightPower = ko.computed(function () {
+                return _this.getLightPower(_this.selectedStreetlight());
+            });
         }
         ApplicationViewModel.prototype.selectStreetlight = function (parent, streetlight) {
             parent.selectedStreetlight(null);
@@ -32,7 +35,7 @@ var Rsl;
         };
         ApplicationViewModel.prototype.getLightPower = function (light) {
             var result = 0;
-            if (light.isSwitchedOn()) {
+            if (light && light.isSwitchedOn()) {
                 for (var _i = 0, _a = light.bulbs; _i < _a.length; _i++) {
                     var bulb = _a[_i];
                     if (bulb.bulbStatus().isOn) {
