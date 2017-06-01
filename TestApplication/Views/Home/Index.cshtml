@@ -40,7 +40,8 @@
                                                         'bulb-temperature-high'       : bulbStatus().bulbTemperature &gt; bulbInformation.maxTemperature,
                                                        }"><span data-bind="text: bulbStatus().bulbTemperature"></span>/<span data-bind="text:bulbInformation.maxTemperature"></span>C</span>
                     Hours: <span data-bind="text: bulbStatus().bulbHours"></span>/<span data-bind="text:bulbInformation.maxHours"></span>hrs
-                    <button class="pull-right">Toggle Bulb State</button>
+                    <button class="pull-right" data-bind="click: $root.toggleBulbState($root, $parent, $data),
+                                                          enable: $parent.isSwitchedOn()">Toggle Bulb State</button>
                 </li>
             </ul>
         </div>
@@ -48,7 +49,12 @@
 </section>
 
 <!-- Loading message -->
-<section class="info-loading" data-bind="css: {'info-loading--visible' : isLongProcess()}">
+<section class="info-loading" data-bind="css: {'hidden' : !isLongProcess()}">
     <div class="info-text">Please wait, information is loading</div>
     <div class="info-progress"></div>
+</section>
+
+<!-- Error message -->
+<section class="error-message" data-bind="css: {'hidden' : !lastErrorMessage()}">
+    Mistake: <span data-bind="text: lastErrorMessage()"></span>
 </section>

@@ -2,13 +2,16 @@
 /// <reference path="../Definitions/jquery.d.ts" />
 var Rsl;
 (function (Rsl) {
+    var ERROR_LIFE_TIME = 2000;
     var ApplicationViewModel = (function () {
         // get applicant to add a loader here
         function ApplicationViewModel(_apiAccess) {
             var _this = this;
             this._apiAccess = _apiAccess;
             this.longProcessesCount = 0;
+            this.errorsCount = 0;
             this.isLongProcess = ko.observable(false);
+            this.lastErrorMessage = ko.observable('');
             this.streetlights = ko.observable();
             this.selectedStreetlight = ko.observable();
             this.loadData().done(function (x) {
@@ -59,7 +62,9 @@ var Rsl;
                 }));
             }
         };
-        ApplicationViewModel.prototype.toggleBulbState = function (parent, bulb) {
+        ApplicationViewModel.prototype.toggleBulbState = function (parent, light, bulb) {
+            if (!light.isSwitchedOn())
+                return;
             var isOn = bulb.bulbStatus().isOn;
             if (isOn) {
                 // always switch off
@@ -70,17 +75,37 @@ var Rsl;
                 }));
             }
             else {
+                // always switch on
+                this.runLongProcess(parent._apiAccess.switchOnBulb(bulb.bulbInformation.id)
+                    .done(function (x) {
+                    // reload bulb data
+                    parent.updateBulbStatus(bulb);
+                }));
             }
         };
         ApplicationViewModel.prototype.runLongProcess = function (promise) {
             var _this = this;
-            console.log(promise);
             if (++this.longProcessesCount == 1)
                 this.isLongProcess(true);
             return promise.always(function () {
                 if (--_this.longProcessesCount == 0)
                     _this.isLongProcess(false);
+            }).fail(function (error) {
+                _this.setError(error);
             });
+        };
+        ApplicationViewModel.prototype.setError = function (error) {
+            var _this = this;
+            if (error == null) {
+                this.lastErrorMessage('');
+                return;
+            }
+            var errorId = ++this.errorsCount;
+            this.lastErrorMessage(error.toString());
+            setTimeout(function () {
+                if (errorId == _this.errorsCount)
+                    _this.lastErrorMessage('');
+            }, ERROR_LIFE_TIME);
         };
         ApplicationViewModel.prototype.updateBulbStatus = function (bulb) {
             this._apiAccess.loadBulbDetail(bulb.bulbInformation.id).done(function (x) {

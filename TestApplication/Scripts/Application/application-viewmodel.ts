@@ -2,12 +2,17 @@
 /// <reference path="../Definitions/jquery.d.ts" />
 
 module Rsl {
+    const ERROR_LIFE_TIME = 2000;
+
     export class ApplicationViewModel {
         public streetlights: KnockoutObservable<Models.IStreetlightSummary[]>;
         public selectedStreetlight: KnockoutObservable<IStreetlightDetailViewModel>;
 
         private longProcessesCount: number = 0;
+        private errorsCount: number = 0;
+
         public isLongProcess: KnockoutObservable<boolean> = ko.observable(false);
+        public lastErrorMessage: KnockoutObservable<string> = ko.observable('');
 
         // get applicant to add a loader here
         constructor(private _apiAccess: IApiAccess) {
@@ -71,7 +76,9 @@ module Rsl {
             }
         }
 
-        public toggleBulbState(parent: ApplicationViewModel, bulb: IBulbStateViewModel): void {
+        public toggleBulbState(parent: ApplicationViewModel, light: IStreetlightDetailViewModel, bulb: IBulbStateViewModel): void {
+            if (!light.isSwitchedOn()) return;
+
             var isOn = bulb.bulbStatus().isOn;
             
             if (isOn) {
@@ -85,20 +92,43 @@ module Rsl {
                 );
             }
             else {
-                // TODO: implement on methods here
+                // always switch on
+                this.runLongProcess(
+                    parent._apiAccess.switchOnBulb(bulb.bulbInformation.id)
+                        .done(x => {
+                            // reload bulb data
+                            parent.updateBulbStatus(bulb);
+                        })
+                );
             }
         }
 
         private runLongProcess(promise: JQueryPromise<any>): JQueryPromise<any> {
-            console.log(promise);
-
             if (++this.longProcessesCount == 1)
                 this.isLongProcess(true);
 
             return promise.always(() => {
                 if (--this.longProcessesCount == 0)
                     this.isLongProcess(false);
+
+            }).fail((error) => {
+                this.setError(error);
             });
+        }
+
+        private setError(error: any) {
+            if (error == null) {
+                this.lastErrorMessage('');
+                return;
+            }
+
+            let errorId = ++this.errorsCount;
+            this.lastErrorMessage(error.toString());
+
+            setTimeout(() => {
+                if (errorId == this.errorsCount)
+                    this.lastErrorMessage('');
+            }, ERROR_LIFE_TIME);
         }
 
         private updateBulbStatus(bulb: IBulbStateViewModel) {

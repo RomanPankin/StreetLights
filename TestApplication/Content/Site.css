@@ -118,9 +118,14 @@ article h2 {
     font-weight: bold;
 }
 
+/* Hidden element */
+.hidden {
+    display: none;
+}
+
 /* Information */
 .info-loading {
-    display: none;
+    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -130,10 +135,6 @@ article h2 {
     right: 0px;
     bottom: 0px;
     background: rgba(255,255,255,0.85);
-}
-
-.info-loading--visible {
-    display: flex;
 }
 
 .info-text {
@@ -167,4 +168,18 @@ article h2 {
     0%   {left: 0px;}
     50%  {left: 100%;}
     100% {left: 0px}
+}
+
+/* Error */
+.error-message {
+    display: block;
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    right: 0px;
+    padding: 0.5rem 1rem;
+
+    color: rgb(169,68,66);
+    background-color: rgb(242,222,222);
+    border-bottom-color: rgb(235, 204, 209);
 }
