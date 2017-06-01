@@ -25,6 +25,18 @@ var Rsl;
         ApplicationViewModel.prototype.isFailed = function (bulb) {
             return bulb.bulbStatus().fault > 0;
         };
+        ApplicationViewModel.prototype.getLightPower = function (light) {
+            var result = 0;
+            if (light.isSwitchedOn()) {
+                for (var _i = 0, _a = light.bulbs; _i < _a.length; _i++) {
+                    var bulb = _a[_i];
+                    if (bulb.bulbStatus().isOn) {
+                        result += bulb.bulbInformation.powerDraw;
+                    }
+                }
+            }
+            return result;
+        };
         ApplicationViewModel.prototype.toggleLightState = function (light) {
             var _this = this;
             var isOn = light.isSwitchedOn();
@@ -70,7 +82,7 @@ var Rsl;
             return this._apiAccess.loadStreetlightDetail(id);
         };
         return ApplicationViewModel;
-    })();
+    }());
     Rsl.ApplicationViewModel = ApplicationViewModel;
 })(Rsl || (Rsl = {}));
 //# sourceMappingURL=application-viewmodel.js.map

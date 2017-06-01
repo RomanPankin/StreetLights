@@ -28,6 +28,20 @@ module Rsl {
             return bulb.bulbStatus().fault > 0;
         }
 
+        public getLightPower(light: IStreetlightDetailViewModel): number {
+            let result = 0;
+
+            if (light.isSwitchedOn()) {
+                for (let bulb of light.bulbs) {
+                    if (bulb.bulbStatus().isOn) {
+                        result += bulb.bulbInformation.powerDraw;
+                    }
+                }
+            }
+
+            return result;
+        }
+
         public toggleLightState(light: IStreetlightDetailViewModel): void {
             var isOn = light.isSwitchedOn();
 
