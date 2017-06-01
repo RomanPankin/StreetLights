@@ -122,3 +122,4 @@ var Rsl;
     }());
     Rsl.ApplicationViewModel = ApplicationViewModel;
 })(Rsl || (Rsl = {}));
+//# sourceMappingURL=application-viewmodel.js.map

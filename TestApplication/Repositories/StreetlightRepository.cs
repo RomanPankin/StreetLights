@@ -119,12 +119,15 @@ namespace TestApplication.Repositories
         {
             var success = await _lightDriver.SwitchOffLight(lightId);
             var streetlightDetail = await _dataService.GetStreetlightDetail(lightId); // kills power to the light
+            var tasks = new List<Task<bool>>();
 
             foreach (var bulb in streetlightDetail.Bulbs)
             {
-                await _dataService.UpdateBulbStatus(bulb.BulbInformation.Id, false); // shut off all bulbs without mercy
+                // shut off all bulbs without mercy
+                tasks.Add(_dataService.UpdateBulbStatus(bulb.BulbInformation.Id, false));
             }
 
+            await Task.WhenAll(tasks);
             await _dataService.UpdateStreetlightStatus(lightId, false);
 
             return true;
@@ -135,20 +138,25 @@ namespace TestApplication.Repositories
             // we switch on only bulbs that are valid
             var streetlightDetail = await _dataService.GetStreetlightDetail(lightId);
             IList<Guid> bulbsSwitchedOn = new List<Guid>();
+            var tasks = new List<Task>();
 
             foreach (var bulb in streetlightDetail.Bulbs)
             {
-                if (CanSwitchBulbOn(bulb) && await _lightDriver.SwitchOnBulb(bulb.BulbInformation.Id))
+                tasks.Add(Task.Run(async () =>
                 {
-                    lock (bulbsSwitchedOn)
+                    if (CanSwitchBulbOn(bulb) && await _lightDriver.SwitchOnBulb(bulb.BulbInformation.Id))
                     {
-                        bulbsSwitchedOn.Add(bulb.BulbInformation.Id);
-                    }
+                        lock (bulbsSwitchedOn)
+                        {
+                            bulbsSwitchedOn.Add(bulb.BulbInformation.Id);
+                        }
 
-                    await _dataService.UpdateBulbStatus(bulb, true);
-                }
+                        await _dataService.UpdateBulbStatus(bulb, true);
+                    }
+                }));
             }
 
+            await Task.WhenAll(tasks);
             await _dataService.UpdateStreetlightStatus(lightId, true);
 
             return bulbsSwitchedOn;
