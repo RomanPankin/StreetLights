@@ -65,7 +65,7 @@ If you found the previous tasks easy you may want to try this task out.
     1. You will need to implement the ‘SetFault’ methods in the API controller and repository to update the bulb status with the failure code or to remove it.
     2. The button on each bulb in the UI will need to respond to the current state of the bulb, and be able to access the service setting the bulb state accordingly.
 
-# Questions or Correction
+# Questions and correction
 
 1. Task2. "If the temperature is ½ the max temperature the colour of temperature / max temperature should be Orange. If the bulb temperature exceeds the max temperature the font should be bold and the colour Red".
 
