@@ -3,6 +3,7 @@
 
 module Rsl {
     const ERROR_LIFE_TIME = 2000;
+    const ERROR_BULB_STATE_NOT_CHANGED = "There is a problem with switching the bulb #";
 
     export class ApplicationViewModel {
         public streetlights: KnockoutObservable<Models.IStreetlightSummary[]>;
@@ -92,8 +93,12 @@ module Rsl {
                 this.runLongProcess(
                     parent._apiAccess.switchOffBulb(bulb.bulbInformation.id)
                         .done(x => {
+                            // Error message
+                            if (!x)
+                                this.setError(ERROR_BULB_STATE_NOT_CHANGED + bulb.bulbInformation.id);
+
                             // reload bulb data
-                            parent.updateBulbStatus(bulb);
+                            return parent.updateBulbStatus(bulb);
                         })
                 );
             }
@@ -102,9 +107,13 @@ module Rsl {
                 this.runLongProcess(
                     parent._apiAccess.switchOnBulb(bulb.bulbInformation.id)
                         .done(x => {
+                            // Error message
+                            if (!x)
+                                this.setError(ERROR_BULB_STATE_NOT_CHANGED + bulb.bulbInformation.id);
+
                             // reload bulb data
-                            parent.updateBulbStatus(bulb);
-                        })
+                            return parent.updateBulbStatus(bulb);
+                        });
                 );
             }
         }
@@ -147,10 +156,9 @@ module Rsl {
             }, ERROR_LIFE_TIME);
         }
 
-        private updateBulbStatus(bulb: IBulbStateViewModel) {
-            this._apiAccess.loadBulbDetail(bulb.bulbInformation.id).done(x => {
+        private updateBulbStatus(bulb: IBulbStateViewModel): JQueryPromise<Models.IBulbState> {
+            return this._apiAccess.loadBulbDetail(bulb.bulbInformation.id).done(x => {
                 bulb.bulbStatus(x.bulbCurrentState);
-                console.log(x.bulbCurrentState);
             });
         }
 

@@ -3,6 +3,7 @@
 var Rsl;
 (function (Rsl) {
     var ERROR_LIFE_TIME = 2000;
+    var ERROR_BULB_STATE_NOT_CHANGED = "There is a problem with switching the bulb #";
     var ApplicationViewModel = (function () {
         // get applicant to add a loader here
         function ApplicationViewModel(_apiAccess) {
@@ -66,6 +67,7 @@ var Rsl;
             }
         };
         ApplicationViewModel.prototype.toggleBulbState = function (parent, light, bulb) {
+            var _this = this;
             if (!light.isSwitchedOn())
                 return;
             var isOn = bulb.bulbStatus().isOn;
@@ -73,17 +75,24 @@ var Rsl;
                 // always switch off
                 this.runLongProcess(parent._apiAccess.switchOffBulb(bulb.bulbInformation.id)
                     .done(function (x) {
+                    // Error message
+                    if (!x)
+                        _this.setError(ERROR_BULB_STATE_NOT_CHANGED + bulb.bulbInformation.id);
                     // reload bulb data
-                    parent.updateBulbStatus(bulb);
+                    return parent.updateBulbStatus(bulb);
                 }));
             }
             else {
                 // always switch on
                 this.runLongProcess(parent._apiAccess.switchOnBulb(bulb.bulbInformation.id)
                     .done(function (x) {
+                    // Error message
+                    if (!x)
+                        _this.setError(ERROR_BULB_STATE_NOT_CHANGED + bulb.bulbInformation.id);
                     // reload bulb data
-                    parent.updateBulbStatus(bulb);
+                    return parent.updateBulbStatus(bulb);
                 }));
+                ;
             }
         };
         ApplicationViewModel.prototype.setFault = function (parent, bulb, fault) {
@@ -118,9 +127,8 @@ var Rsl;
             }, ERROR_LIFE_TIME);
         };
         ApplicationViewModel.prototype.updateBulbStatus = function (bulb) {
-            this._apiAccess.loadBulbDetail(bulb.bulbInformation.id).done(function (x) {
+            return this._apiAccess.loadBulbDetail(bulb.bulbInformation.id).done(function (x) {
                 bulb.bulbStatus(x.bulbCurrentState);
-                console.log(x.bulbCurrentState);
             });
         };
         ApplicationViewModel.prototype.loadData = function () {
