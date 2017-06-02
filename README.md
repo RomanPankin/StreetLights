@@ -69,8 +69,9 @@ If you found the previous tasks easy you may want to try this task out.
 
 1. Task2. "If the temperature is ½ the max temperature the colour of temperature / max temperature should be Orange. If the bulb temperature exceeds the max temperature the font should be bold and the colour Red".
 
-What color should be between 1/2 and max temperature? Solved with Orange color.
+    1. What color should be between 1/2 and max temperature? Solved with Orange color.
+    2. What color should be if streetlight is turned off?
 
 2. BulbData class (inside BuldState.cs) has a 'FaultCondition' field, which is passed in the post-query. However, the same class inside TypeScript - IBulbStatus interface (models.ts) - has similar field named 'fault'.
 
-Correction: field 'fault' was renamed to 'faultCondition' 
+    1. Correction: field 'fault' was renamed to 'faultCondition' 
